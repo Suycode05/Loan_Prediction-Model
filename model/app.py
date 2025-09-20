@@ -1,14 +1,14 @@
 from flask import Flask, request, jsonify
 import pickle
 import numpy as np
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 import pandas as pd
 import logging
 
 app = Flask(__name__)
-# Configure logging
 logging.basicConfig(level=logging.INFO)
-CORS(app, resources={r"/*": {"origins": "*"}})
+# Explicitly allow localhost:5173 (Vite) and all origins for testing
+CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "*"]}})
 
 # Load the trained classifier model
 try:
@@ -17,15 +17,39 @@ try:
     app.logger.info("Model loaded successfully.")
 except FileNotFoundError:
     app.logger.error("Model file not found! Ensure 'model/load_model.pkl' is in the correct directory.")
-    model = None # Set model to None so the app can still start
+    model = None
 
-# --- NEW HEALTH CHECK ROUTE ---
-# This route lets us verify that the server is online and responding to requests.
-@app.route('/', methods=['GET'])
-@cross_origin()
+@app.route('/', methods=['GET', 'OPTIONS'])
 def health_check():
     app.logger.info("Health check endpoint was hit.")
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
     return jsonify({"status": "ok", "message": "Loan Prediction Server is running"}), 200
+
+@app.route('/user/testdata/<id>', methods=['GET', 'OPTIONS'])
+def get_user_data(id):
+    app.logger.info(f"Fetching test data for ID: {id}")
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
+    # Mock data (add more IDs if needed)
+    if id in ['68c2fc14a548b030a48bcc1f', '68c30974b9e7b20bd402aef8']:
+        return jsonify({
+            'Age': 30,
+            'AnnualIncome': 50000,
+            'Creditscore': 720,
+            'EmploymentStatus': 'Employed',
+            'EducationLevel': 'Bachelor',
+            'LoanAmount': 10000,
+            'LoanDuration': 12,
+            'CreditCardUtilizationRate': 30,
+            'BankruptcyHistory': False,
+            'PreviousLoanDefaults': False,
+            'LengthOfCreditHistory': 5,
+            'TotalLiabilities': 20000,
+            'NetWorth': 50000,
+            'InterestRate': 5.5
+        })
+    return jsonify({'error': 'User not found'}), 404
 
 def calculate_risk_score(data):
     try:
@@ -55,7 +79,6 @@ def calculate_risk_score(data):
         raise ValueError(f"Error in risk score calculation: {str(e)}")
 
 @app.route('/predict', methods=['POST', 'OPTIONS'])
-@cross_origin()
 def predict():
     app.logger.info("'/predict' endpoint was hit.")
     if request.method == 'OPTIONS':
@@ -91,4 +114,3 @@ def predict():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
-

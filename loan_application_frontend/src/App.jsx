@@ -17,7 +17,6 @@ const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check authentication status on component mount
   useEffect(() => {
     checkAuthStatus();
   }, []);
@@ -29,7 +28,6 @@ const App = () => {
     
     console.log('🔍 Debug - Auth Check:', { token, userData, employeeData });
     
-    // More robust validation
     if (token && token.trim() !== '' && (userData || employeeData)) {
       try {
         if (userData) {
@@ -51,14 +49,12 @@ const App = () => {
         }
       } catch (error) {
         console.error('Error parsing user/employee data:', error);
-        // Clear invalid data
         localStorage.removeItem('authToken');
         localStorage.removeItem('userData');
         localStorage.removeItem('employeeData');
       }
     }
     
-    // If we reach here, user is not authenticated
     console.log('❌ User not authenticated');
     setIsAuthenticated(false);
     setUser(null);
@@ -73,7 +69,6 @@ const App = () => {
     navigate('/');
   };
 
-  // Debug function to clear all localStorage
   const clearLocalStorage = () => {
     localStorage.clear();
     setIsAuthenticated(false);
@@ -88,17 +83,32 @@ const App = () => {
 
   return (
     <>
-      {/* Show navigation always except on employee dashboard */}
       {location.pathname !== '/employee-dashboard' && (
         <nav className="w-full bg-gray-200 flex items-center justify-between px-5 py-2">
           <h1 className="text-black text-xl flex items-center gap-2 font-bold">
             <Link to="/" className='flex items-center gap-2'>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-newspaper-icon lucide-newspape  "><path d="M15 18h-5" /><path d="M18 14h-8" /><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0v-9a2 2 0 0 1 2-2h2" /><rect width="8" height="4" x="10" y="6" rx="1" /></svg>
-              LoanPredict 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-newspaper-icon lucide-newspaper"
+              >
+                <path d="M15 18h-5" />
+                <path d="M18 14h-8" />
+                <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0v-9a2 2 0 0 1 2-2h2" />
+                <rect width="8" height="4" x="10" y="6" rx="1" />
+              </svg>
+              LoanPredict
             </Link>
           </h1>
 
-          <ul className="flex space-x-4 gap-5 text-black font-semibold ">
+          <ul className="flex space-x-4 gap-5 text-black font-semibold">
             <li>
               <Link className='hover:text-emerald-800 transition duration-300 hover:underline hidden sm:block' to="/">Home</Link>
             </li>
@@ -112,8 +122,7 @@ const App = () => {
               <Link className='hidden sm:block hover:text-emerald-800 transition duration-300 hover:underline' to="/contact">Contact</Link>
             </li>
           </ul>
-    
-          {/* Login button for non-authenticated users, User info for authenticated users */}
+
           <div className="flex items-center space-x-2">
             {!isAuthenticated && (
               <Link to="/AuthLogin">
@@ -151,7 +160,7 @@ const App = () => {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="block sm:hidden lucide lucide-menu-icon lucide-menu cursor-pointer hover:text-emerald-800 transition-colors "
+            className="block sm:hidden lucide lucide-menu-icon lucide-menu cursor-pointer hover:text-emerald-800 transition-colors"
           >
             <path d="M4 12h16" />
             <path d="M4 18h16" />
@@ -160,10 +169,8 @@ const App = () => {
         </nav>
       )}
 
-      {/* Mobile Menu - only show when not on employee dashboard */}
       {location.pathname !== '/employee-dashboard' && isMobileMenuOpen && (
-        <div className={`fixed left-0 top-0 h-full w-64 bg-gray-100 z-50 transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}>
+        <div className={`fixed left-0 top-0 h-full w-64 bg-gray-100 z-50 transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
           <ul className="flex flex-col py-2">
             <li>
               <Link
@@ -248,7 +255,6 @@ const App = () => {
         <Route path="/predict/:id" element={<LoanPredictionForm />} />
         <Route path="/result" element={<Result />} />
       </Routes>
-
     </>
   );
 };

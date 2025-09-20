@@ -1,4 +1,3 @@
-// Updated LoanPredictionForm.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -24,13 +23,19 @@ const LoanPredictionForm = () => {
 	const navigate = useNavigate();
 	const [formData, setFormData] = useState(initialState);
 	const [loading, setLoading] = useState(true);
-
+	const [error, setError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
 		const fetchUser = async () => {
 			try {
-				const response = await fetch(`https://loan-prediction-model-eight.vercel.app/user/testdata/${id}`);
+				const token = localStorage.getItem('authToken');
+				const response = await fetch(`https://loan-prediction-model-eight.vercel.app/user/testdata/${id}`, {
+					headers: {
+						'Authorization': `Bearer ${token || ''}`,
+						'Content-Type': 'application/json',
+					},
+				});
 				if (response.ok) {
 					const user = await response.json();
 					setFormData({
@@ -49,11 +54,13 @@ const LoanPredictionForm = () => {
 						NetWorth: user.NetWorth ?? "",
 						InterestRate: user.InterestRate ?? "",
 					});
+					setError(null);
 				} else {
-					console.error("Failed to load test user data.");
+					const errorText = await response.text();
+					setError(`Failed to load data: ${response.status} ${errorText}`);
 				}
 			} catch (err) {
-				console.error("Error fetching user data:", err);
+				setError(`Network error: ${err.message}. Is the Vercel backend reachable?`);
 			} finally {
 				setLoading(false);
 			}
@@ -67,6 +74,10 @@ const LoanPredictionForm = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		if (error) {
+			alert("Please resolve data loading issue first.");
+			return;
+		}
 		setIsLoading(true);
 
 		const submissionData = {
@@ -86,16 +97,19 @@ const LoanPredictionForm = () => {
 		};
 
 		try {
-			const backendUrl = "https://loan-prediction-model-eight.vercel.app/predict";
+			const token = localStorage.getItem('authToken');
+			const backendUrl = "https://loan-prediction-model-1.onrender.com/predict";
 			const response = await fetch(backendUrl, {
 				method: "POST",
-				headers: { "Content-Type": "application/json" },
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${token || ''}`,
+				},
 				body: JSON.stringify(submissionData),
 			});
 
 			if (response.ok) {
 				const result = await response.json();
-				// Navigate to result page with state
 				navigate("/result", {
 					state: {
 						predictionResult: result.result,
@@ -104,15 +118,13 @@ const LoanPredictionForm = () => {
 					},
 				});
 			} else {
-				const errorData = await response.json();
-				console.error("Prediction API Error:", errorData.error);
-				alert(`Error: ${errorData.error}`);
+				const errorText = await response.text();
+				setError(`Prediction error: ${response.status} ${errorText}`);
+				alert(`Error: ${response.status} ${errorText}`);
 			}
 		} catch (error) {
-			console.error("Network error:", error);
-			alert(
-				"A network error occurred. Please check the console and ensure the backend is running."
-			);
+			setError(`Network error: ${error.message}. Is the Render backend reachable?`);
+			alert("A network error occurred. Check console and Render backend.");
 		} finally {
 			setIsLoading(false);
 		}
@@ -122,6 +134,23 @@ const LoanPredictionForm = () => {
 		return (
 			<div className="flex items-center justify-center h-screen bg-white">
 				<div className="text-xl">Loading...</div>
+			</div>
+		);
+	}
+
+	if (error) {
+		return (
+			<div className="min-h-screen flex flex-col items-center justify-center bg-white py-4">
+				<div className="text-center p-8 bg-red-50 border border-red-200 rounded-lg">
+					<h2 className="text-red-800 text-xl font-bold mb-2">Data Load Error</h2>
+					<p className="text-red-600 mb-4">{error}</p>
+					<button
+						onClick={() => window.location.reload()}
+						className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+					>
+						Retry
+					</button>
+				</div>
 			</div>
 		);
 	}
@@ -248,9 +277,9 @@ const LoanPredictionForm = () => {
 					<div className="flex px-4 py-3 justify-center">
 						<button
 							type="submit"
-							disabled={isLoading}
+							disabled={isLoading || error}
 							className={`flex min-w-[84px] max-w-[480px] items-center justify-center rounded-lg h-10 px-4 text-slate-50 text-sm font-bold transition-all ${
-								isLoading
+								isLoading || error
 									? "bg-gray-400 cursor-not-allowed"
 									: "bg-[#1978e5] hover:bg-[#1565c0]"
 							}`}
