@@ -529,7 +529,7 @@ console.log(submissionData);
                         isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
                       }`}
                     >
-                      {isLoading ? 'Predicting...' : 'Submit'}
+                      {isLoading ? 'Submitting...' : 'Submit'}
                     </button>
                   </div>
                 </form>
