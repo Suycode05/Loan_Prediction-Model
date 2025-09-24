@@ -86,7 +86,7 @@ const LoanPredictionForm = () => {
 		};
 
 		try {
-			const backendUrl = "https://loan-prediction-model-eight.vercel.app/predict";
+			const backendUrl = "https://loan-prediction-model-1.onrender.com/predict";
 			const response = await fetch(backendUrl, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
