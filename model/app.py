@@ -12,7 +12,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Load the trained classifier model
 try:
-    with open('model/load_model.pkl', 'rb') as f:
+    with open('load_model.pkl', 'rb') as f:
         model = pickle.load(f)
     app.logger.info("Model loaded successfully.")
 except FileNotFoundError:
