@@ -4,6 +4,7 @@ import numpy as np
 from flask_cors import CORS, cross_origin
 import pandas as pd
 import logging
+import joblib
 
 app = Flask(__name__)
 # Configure logging
@@ -13,7 +14,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 # Load the trained classifier model
 try:
     with open('load_model.pkl', 'rb') as f:
-        model = pickle.load(f)
+        model = joblib.load('load_model.pkl')
     app.logger.info("Model loaded successfully.")
 except FileNotFoundError:
     app.logger.error("Model file not found! Ensure 'model/load_model.pkl' is in the correct directory.")
