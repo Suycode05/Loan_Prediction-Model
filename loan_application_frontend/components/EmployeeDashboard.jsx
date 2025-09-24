@@ -10,7 +10,7 @@ const EmployeeDashboard = () => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false); // Added for mobile sidebar
   const navigate = useNavigate();
-  const baseUrl = 'http://localhost:3000'; // Updated to match backend server port
+  const baseUrl = 'https://loan-prediction-model-eight.vercel.app'; // Updated to match backend server port
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
