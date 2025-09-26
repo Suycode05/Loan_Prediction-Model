@@ -6,8 +6,8 @@ const Prediction = () => {
   const [userData, setUserData] = useState(null);
   const [predictionResult, setPredictionResult] = useState(null);
   const [riskScore, setRiskScore] = useState(null);
-  const [showResults, setShowResults] = useState(false); // For animation
-  const [isLoading, setIsLoading] = useState(false); // For loading state
+  const [showResults, setShowResults] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false); 
 
   useEffect(() => {
     const storedUserData = localStorage.getItem('userData');

@@ -5,27 +5,24 @@ import { useNavigate } from 'react-router-dom';
 const Sidebar = ({ currentStep, onSectionClick }) => (
   <nav className="sidebar-menu py-8 px-2 bg-[#f5f6fa] h-full min-w-[220px] flex flex-col gap-1 border-r">
     <button
-      className={`w-full text-left px-4 py-3 rounded-lg font-semibold transition ${
-        currentStep === 0 ? 'bg-[#e4ecfa] text-[#1978e5]' : 'text-gray-900 hover:text-[#1978e5] hover:bg-[#e4ecfa] cursor-pointer'
-      }`}
+      className={`w-full text-left px-4 py-3 rounded-lg font-semibold transition ${currentStep === 0 ? 'bg-[#e4ecfa] text-[#1978e5]' : 'text-gray-900 hover:text-[#1978e5] hover:bg-[#e4ecfa] cursor-pointer'
+        }`}
       onClick={() => onSectionClick(0)}
       style={{ cursor: 'pointer' }}
     >
       Submit Application
     </button>
     <button
-      className={`w-full text-left px-4 py-3 rounded-lg font-semibold transition ${
-        currentStep === 1 ? 'bg-[#e4ecfa] text-[#1978e5]' : 'text-gray-900 hover:text-[#1978e5] hover:bg-[#e4ecfa] cursor-pointer'
-      }`}
+      className={`w-full text-left px-4 py-3 rounded-lg font-semibold transition ${currentStep === 1 ? 'bg-[#e4ecfa] text-[#1978e5]' : 'text-gray-900 hover:text-[#1978e5] hover:bg-[#e4ecfa] cursor-pointer'
+        }`}
       onClick={() => onSectionClick(1)}
       style={{ cursor: 'pointer' }}
     >
       Select Bank
     </button>
     <button
-      className={`w-full text-left px-4 py-3 rounded-lg font-semibold transition ${
-        currentStep === 2 ? 'bg-[#e4ecfa] text-[#1978e5]' : 'text-gray-900 hover:text-[#1978e5] hover:bg-[#e4ecfa] cursor-pointer'
-      }`}
+      className={`w-full text-left px-4 py-3 rounded-lg font-semibold transition ${currentStep === 2 ? 'bg-[#e4ecfa] text-[#1978e5]' : 'text-gray-900 hover:text-[#1978e5] hover:bg-[#e4ecfa] cursor-pointer'
+        }`}
       onClick={() => onSectionClick(2)}
       style={{ cursor: 'pointer' }}
     >
@@ -92,6 +89,8 @@ const Prediction = () => {
   const [riskScore, setRiskScore] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+
 
   // Sidebar navigation state
   const [sidebarStep, setSidebarStep] = useState(0); // 0: Submit, 1: Select Bank, 2: Review
@@ -142,6 +141,10 @@ const Prediction = () => {
     navigate('/auth');
   };
 
+  const toggleChat = () => {
+    setShowChat(!showChat);
+  };
+
   const handleSidebarSection = (index) => {
     if (index === 1 && !formSubmitted) {
       alert('Please submit your application before selecting a bank.');
@@ -154,62 +157,62 @@ const Prediction = () => {
     setSidebarStep(index);
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const requiredFields = [
-    'Age', 'AnnualIncome', 'Creditscore', 'EmploymentStatus', 'EducationLevel',
-    'LoanAmount', 'LoanDuration', 'CreditCardUtilizationRate', 'LengthOfCreditHistory',
-    'TotalLiabilities', 'NetWorth', 'InterestRate'
-  ];
+    const requiredFields = [
+      'Age', 'AnnualIncome', 'Creditscore', 'EmploymentStatus', 'EducationLevel',
+      'LoanAmount', 'LoanDuration', 'CreditCardUtilizationRate', 'LengthOfCreditHistory',
+      'TotalLiabilities', 'NetWorth', 'InterestRate'
+    ];
 
-  const missingFields = requiredFields.filter(field => !formData[field] && formData[field] !== false);
-  if (missingFields.length > 0) {
-    alert(`Please fill in all required fields: ${missingFields.join(', ')}`);
-    return;
-  }
-
-  try {
-    const baseUrl = 'https://loan-prediction-model-eight.vercel.app/user/testdata';
-
-    const submissionData = {
-  Age: parseInt(formData.Age),
-  AnnualIncome: parseFloat(formData.AnnualIncome),
-  Creditscore: parseInt(formData.Creditscore),
-  EmploymentStatus: formData.EmploymentStatus,    // String
-  EducationLevel: formData.EducationLevel,        // String
-  LoanAmount: parseFloat(formData.LoanAmount),
-  LoanDuration: parseInt(formData.LoanDuration),
-  CreditCardUtilizationRate: parseFloat(formData.CreditCardUtilizationRate),
-  BankruptcyHistory: formData.BankruptcyHistory === 'true' || formData.BankruptcyHistory === true,
-  PreviousLoanDefaults: formData.PreviousLoanDefaults === 'true' || formData.PreviousLoanDefaults === true,
-  LengthOfCreditHistory: parseInt(formData.LengthOfCreditHistory),
-  TotalLiabilities: parseFloat(formData.TotalLiabilities),
-  NetWorth: parseFloat(formData.NetWorth),
-  InterestRate: parseFloat(formData.InterestRate)
-};
-
-console.log("Submitting data:", submissionData);
-
-    const response = await fetch(baseUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(submissionData)
-    });
-
-    if (response.ok) {
-      alert('Data submitted successfully.');
-      setFormSubmitted(true);
-      setSidebarStep(1);
-    } else {
-      const errorData = await response.json();
-      alert(`Error: ${errorData.error}`);
+    const missingFields = requiredFields.filter(field => !formData[field] && formData[field] !== false);
+    if (missingFields.length > 0) {
+      alert(`Please fill in all required fields: ${missingFields.join(', ')}`);
+      return;
     }
-  } catch (error) {
-    console.error('Network error:', error);
-    alert('Network error. Please try again.');
-  }
-};
+
+    try {
+      const baseUrl = 'https://loan-prediction-model-eight.vercel.app/user/testdata';
+
+      const submissionData = {
+        Age: parseInt(formData.Age),
+        AnnualIncome: parseFloat(formData.AnnualIncome),
+        Creditscore: parseInt(formData.Creditscore),
+        EmploymentStatus: formData.EmploymentStatus,    // String
+        EducationLevel: formData.EducationLevel,        // String
+        LoanAmount: parseFloat(formData.LoanAmount),
+        LoanDuration: parseInt(formData.LoanDuration),
+        CreditCardUtilizationRate: parseFloat(formData.CreditCardUtilizationRate),
+        BankruptcyHistory: formData.BankruptcyHistory === 'true' || formData.BankruptcyHistory === true,
+        PreviousLoanDefaults: formData.PreviousLoanDefaults === 'true' || formData.PreviousLoanDefaults === true,
+        LengthOfCreditHistory: parseInt(formData.LengthOfCreditHistory),
+        TotalLiabilities: parseFloat(formData.TotalLiabilities),
+        NetWorth: parseFloat(formData.NetWorth),
+        InterestRate: parseFloat(formData.InterestRate)
+      };
+
+      console.log("Submitting data:", submissionData);
+
+      const response = await fetch(baseUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(submissionData)
+      });
+
+      if (response.ok) {
+        alert('Data submitted successfully.');
+        setFormSubmitted(true);
+        setSidebarStep(1);
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      alert('Network error. Please try again.');
+    }
+  };
 
 
   const handleApplyBank = (bank) => {
@@ -225,7 +228,7 @@ console.log("Submitting data:", submissionData);
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-4">
               <div className="flex items-center space-x-2 sm:space-x-3">
-                <h1 className="hidden sm:block text-xl sm:text-2xl font-bold text-gray-900">RiskLends</h1>
+                <h1 className="hidden sm:block text-xl sm:text-2xl font-bold text-gray-900">LoanPredict</h1>
                 <span className="px-2 sm:px-3 py-1 bg-green-100 text-green-800 text-xs sm:text-sm font-medium rounded-full">
                   <span className="sm:hidden">Portal</span>
                   <span className="hidden sm:inline">User Portal</span>
@@ -257,7 +260,7 @@ console.log("Submitting data:", submissionData);
                 <p className="text-[#0e141b] text-base text-center pb-3">Fill the details below and submit application.</p>
                 <form onSubmit={handleSubmit} className="w-full max-w-lg">
                   {/* Form Fields */}
-                  {[ 
+                  {[
                     { name: 'Age', type: 'number', placeholder: 'Enter your age' },
                     { name: 'AnnualIncome', type: 'number', placeholder: 'Enter your annual income' },
                     { name: 'Creditscore', type: 'number', placeholder: 'Credit score (300-850)' },
@@ -367,11 +370,10 @@ console.log("Submitting data:", submissionData);
                     <button
                       type="submit"
                       disabled={isLoading}
-                      className={`flex min-w-[84px] items-center justify-center rounded-lg h-10 px-4 text-slate-50 text-sm font-bold transition-all ${
-                        isLoading 
-                          ? 'bg-gray-400 cursor-not-allowed' 
+                      className={`flex min-w-[84px] items-center justify-center rounded-lg h-10 px-4 text-slate-50 text-sm font-bold transition-all ${isLoading
+                          ? 'bg-gray-400 cursor-not-allowed'
                           : 'bg-[#1978e5] hover:bg-[#1565c0]'
-                      }`}
+                        }`}
                     >
                       {isLoading ? 'Predicting...' : 'Submit'}
                     </button>
@@ -408,8 +410,59 @@ console.log("Submitting data:", submissionData);
           </div>
         </div>
       </main>
+
+      {/* N8N Chat Widget */}
+      <div className={`fixed bottom-6 right-6 z-50 transition-all duration-300 ${showChat ? 'w-96 h-[600px]' : 'w-16 h-16'}`}>
+        {!showChat ? (
+          // Chat Button
+          <button
+            onClick={toggleChat}
+            className="w-16 h-16 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
+            aria-label="Open Chat"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+              <path d="M216,48H40A16,16,0,0,0,24,64V192a15.84,15.84,0,0,0,9.25,14.5A16.13,16.13,0,0,0,40,208a15.89,15.89,0,0,0,10.25-3.78.69.69,0,0,0,.13-.11L82.5,176H216a16,16,0,0,0,16-16V64A16,16,0,0,0,216,48ZM40,192V64H216V160H80a8,8,0,0,0-5.7,2.3L40,192Z" />
+            </svg>
+          </button>
+        ) : (
+          // Chat Window
+          <div className="w-full h-full bg-white rounded-lg shadow-2xl border border-gray-300 overflow-hidden flex flex-col">
+            {/* Chat Header */}
+            <div className="bg-blue-600 text-white p-3 flex justify-between items-center flex-shrink-0">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                <h3 className="font-semibold text-sm">Loan Assistant</h3>
+              </div>
+              <button
+                onClick={toggleChat}
+                className="text-white hover:text-gray-200 transition-colors"
+                aria-label="Close Chat"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256">
+                  <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Chat Content - Full height minus header */}
+            <div className="flex-1 overflow-hidden">
+              <iframe
+                src="https://n8n-latest-mm1b.onrender.com/webhook/4091fa09-fb9a-4039-9411-7104d213f601/chat"
+                className="w-full h-full border-0"
+                title="N8N Chat Assistant"
+                allow="microphone; camera"
+                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
     </div>
+
   );
+
 };
 
 export default Prediction;
