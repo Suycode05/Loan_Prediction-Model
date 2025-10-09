@@ -91,7 +91,7 @@ const App = () => {
   return (
     <>
       {/* Navbar: Show always except on employee dashboard */}
-      {location.pathname !== '/employee-dashboard' && (
+      {location.pathname !== '/employee-dashboard' && location.pathname !== '/prediction' && (
 <nav className="w-full max-w-full bg-white shadow-md flex items-center justify-between px-3 sm:px-6 py-3">
   <h1 className="text-gray-900 text-base sm:text-xl font-bold flex items-center gap-1.5 sm:gap-3">
     <Link to="/" className="flex items-center gap-1.5 sm:gap-3">

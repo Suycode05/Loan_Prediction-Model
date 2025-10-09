@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 
 const home = () => {
   const navigate = useNavigate();
+  const [showChat, setShowChat] = useState(false);
 
   useEffect(() => {
     // Check if user is an employee and redirect to dashboard
@@ -22,6 +23,10 @@ const home = () => {
       }
     }
   }, [navigate]);
+
+  const toggleChat = () => {
+    setShowChat(!showChat);
+  };
   return (
     <>
      <div className="w-full flex justify-center items-center h-[400px] sm:h-[500px] lg:h-[600px] relative px-4   ">
@@ -111,6 +116,54 @@ const home = () => {
     <p className="text-black text-sm">© 2025 LoanPredict. All rights reserved.</p>
   </div>
 </footer>
+
+{/* N8N Chat Widget */}
+<div className={`fixed bottom-6 right-6 z-50 transition-all duration-300 ${showChat ? 'w-96 h-[600px]' : 'w-16 h-16'}`}>
+  {!showChat ? (
+    // Chat Button
+    <button 
+      onClick={toggleChat}
+      className="w-16 h-16 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
+      aria-label="Open Chat"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+        <path d="M216,48H40A16,16,0,0,0,24,64V192a15.84,15.84,0,0,0,9.25,14.5A16.13,16.13,0,0,0,40,208a15.89,15.89,0,0,0,10.25-3.78.69.69,0,0,0,.13-.11L82.5,176H216a16,16,0,0,0,16-16V64A16,16,0,0,0,216,48ZM40,192V64H216V160H80a8,8,0,0,0-5.7,2.3L40,192Z"/>
+      </svg>
+    </button>
+  ) : (
+    // Chat Window
+    <div className="w-full h-full bg-white rounded-lg shadow-2xl border border-gray-300 overflow-hidden flex flex-col">
+      {/* Chat Header */}
+      <div className="bg-blue-600 text-white p-3 flex justify-between items-center flex-shrink-0">
+        <div className="flex items-center space-x-2">
+          <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+          <h3 className="font-semibold text-sm">Loan Assistant</h3>
+        </div>
+        <button 
+          onClick={toggleChat}
+          className="text-white hover:text-gray-200 transition-colors"
+          aria-label="Close Chat"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256">
+            <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/>
+          </svg>
+        </button>
+      </div>
+      
+      {/* Chat Content - Full height minus header */}
+      <div className="flex-1 overflow-hidden">
+        <iframe
+          src="https://n8n-latest-mm1b.onrender.com/webhook/4091fa09-fb9a-4039-9411-7104d213f601/chat"
+          className="w-full h-full border-0"
+          title="N8N Chat Assistant"
+          allow="microphone; camera"
+          sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation"
+          loading="lazy"
+        />
+      </div>
+    </div>
+  )}
+</div>
 
 </>
   )
