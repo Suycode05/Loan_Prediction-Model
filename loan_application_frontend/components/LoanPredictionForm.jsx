@@ -97,7 +97,6 @@ const LoanPredictionForm = () => {
 		};
 
 		try {
-			const token = localStorage.getItem('authToken');
 			const backendUrl = "https://loan-prediction-model-1.onrender.com/predict";
 			const response = await fetch(backendUrl, {
 				method: "POST",
