@@ -1,21 +1,44 @@
-// models/userSchema.js
 const mongoose = require('mongoose');
 
-const panCardSchema = new mongoose.Schema({
-  PanCard: { type: String, required: true,unique:true },
-  AnnualIncome: { type: Number, required: true },
-  Creditscore: { type: Number, required: true },
-  EmploymentStatus: { type: String, required: true },
-  CreditCardUtilizationRate: { type: Number, required: true },
-  BankruptcyHistory: { type: Boolean, required: true },
-  PreviousLoanDefaults: { type: Boolean, required: true },
-  LengthOfCreditHistory: { type: Number, required: true },
-  TotalLiabilities: { type: Number, required: true },
-  InterestRate: { type: Number, required: true },
-  LoanApproved: { type: Boolean, required: false, default: false },
-  RiskScore: { type: Number, required: false, default: 0 },
-});
+const userFinancialSchema = new mongoose.Schema({
+  panCardNumber: {
+    type: String,
+    required: true,
+    unique: true,
+    match: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, // Basic PAN card format validation
+  },
+  AnnualIncome: {
+    type: Number,
+    required: true,
+  },
+  CreditScore: {
+    type: Number,
+    required: true,
+    min: 300,
+    max: 850,
+  },
+  CreditCardUtilizationRate: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 100,
+  },
+  NetWorth: {
+    type: Number,
+    required: true,
+  },
+  BankruptcyHistory: {
+    type: Boolean,
+    required: true,
+  },
+  TotalLiabilities: {
+    type: Number,
+    required: true,
+  },
+  LengthOfCreditHistory: {
+    type: Number,
+    required: true,
+  },
+}, { timestamps: true });
 
-const panCard = mongoose.model('PanCard', panCardSchema);
-
-module.exports = panCard;
+module.exports = mongoose.model('UserFinancial', userFinancialSchema);
